@@ -53,3 +53,5 @@ def confirm_config() -> None:
         # Save the changes to the config file
         with open('./config.ini', 'w') as configfile:
             config_file.write(configfile)
+
+    return config_file

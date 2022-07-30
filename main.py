@@ -1,12 +1,15 @@
 # Standard Library Imports
 import logging
+import sys
 import json
 from datetime import date
 
 # Third Party Library Imports
 
 # Local Library Imports
-import src.setup as setup
+import src.common.setup as setup
+import src.database.schema as db_schema
+import src.database.query as query
 
 # Configure Logging
 log = logging.getLogger('log')
@@ -14,19 +17,36 @@ logFilename = (f"logs/{str(date.today())}_sqlmanager.log")
 logFileHandler = logging.FileHandler(logFilename)
 
 log.setLevel(logging.INFO)
-logFileHandler.setLevel(logging.DEBUG)
+logFileHandler.setLevel(logging.INFO)
 
-logFormat = logging.Formatter(' %(asctime)s | %(filename)s | %(funcName)s | %(levelname)s | %(message)s')
+logFormat = logging.Formatter(' %(asctime)s | %(filename)s | %(funcName)s | %(lineno)d | %(levelname)s | %(message)s')
 logFileHandler.setFormatter(logFormat)
 log.removeHandler(logFileHandler)
 log.addHandler(logFileHandler)
 
-default_databases = ["information_schema", "mysql", "performance_schema"]
-
 
 def main():
     log.info("STARTING ------------------------------------------------")
-    setup.confirm_config()
+    if '-debug' in sys.argv:
+        log.setLevel(logging.DEBUG)
+        logFileHandler.setLevel(logging.DEBUG)
+        log.debug("DEBUG MODE")
+
+    # Get user generated config
+    config = setup.confirm_config()
+
+    # Get system generated config
+    # Apply to logging
+
+    with open(config['schema']['filename']) as schemaFile:
+        json_schema = json.load(schemaFile)
+
+    schema = db_schema.schema().process_dict(json_schema)
+
+    # Now we need to go and get the db schema itself
+    print(query.get_databases())
+
+    pass
 
 
 if __name__ == '__main__':
