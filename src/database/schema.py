@@ -52,7 +52,7 @@ class schema():
 
 
 def process_tables(database_dict: dict) -> list:
-    '''Takes in the parsed json as a dict and attempts to generate table objects'''
+    '''Takes in the parsed json as a dict and attempts to generate table obj'''
     response = []
 
     for dict_table, content in database_dict.items():
@@ -68,7 +68,7 @@ def process_tables(database_dict: dict) -> list:
 
 
 def process_fields(table_dict: dict) -> list:
-    '''Takes in the parsed json as a dict and attempts to generate field objects'''
+    '''Takes in the parsed json as a dict and attempts to generate field obj'''
     response = []
 
     for dict_field, content in table_dict.items():
@@ -79,7 +79,7 @@ def process_fields(table_dict: dict) -> list:
 
         else:
             schema_field = field(
-                name=dict_field, 
+                name=dict_field,
                 type=content['type'],
                 length=content['length'],
                 default=content['default'],
@@ -94,7 +94,8 @@ def process_fields(table_dict: dict) -> list:
 
 
 def check_valid_fields(field_dict: dict) -> bool:
-    '''Takes in a dict of an expected field and returns true if it has all the right attributes'''
+    '''Takes in a dict of an expected field and returns true if it has all
+    the right attributes'''
     # Get the attributes from the dataclass
     expected_keys = list(field.__annotations__.keys())
     expected_keys.remove('name')

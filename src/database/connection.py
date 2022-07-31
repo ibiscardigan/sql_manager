@@ -18,7 +18,7 @@ config_file.read('config.ini')
 def connect(database_name: str = None):
 
     if database_name is not None and isinstance(database_name, str) is False:
-        raise TypeError(f"Database Name must be str; is currently {type(database_name)}")
+        raise TypeError(f"Database Name != str; current {type(database_name)}")
 
     if database_name is None:
         log.info(f"SQL - CONNECTING USING {config_file['db']['db_user']}")
