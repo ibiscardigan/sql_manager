@@ -6,7 +6,7 @@ import os
 import shutil
 
 # Third Party Library Imports
-import pygit2
+import git
 
 # Local Library Imports
 
@@ -14,7 +14,7 @@ import pygit2
 log = logging.getLogger('log')
 
 
-def confirm_config() -> None:
+def confirm_config() -> configparser.ConfigParser:
     '''Searches for the config.ini file in the root dir. If it cant find the
     config file it will earch for a config_template.ini file and copy it; it
     will then prompt to complete the values in the new config.ini file'''
@@ -106,7 +106,8 @@ def update_config(config_file: configparser.ConfigParser,
 
 def get_environment() -> str:
     '''Returns the branch from git'''
-    response = pygit2.Repository('.').head.shorthand
+    response = str(git.Repo('.').active_branch)
+    log.info(f"BRANCH: {response}")
 
     return response
 
@@ -126,6 +127,7 @@ def verify_values(config: configparser.ConfigParser) -> configparser.ConfigParse
                     input_value = input(f"{key}: ")
                     log.info(f"Input: {input_value}")
 
+                log.debug(section, key, input_value)
                 config.set(section, key, input_value)
 
     return config
