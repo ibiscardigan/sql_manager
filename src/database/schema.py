@@ -6,33 +6,10 @@ from dataclasses import dataclass
 import git
 
 # Local Library Imports
+import src.database.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')
-
-
-@dataclass
-class field():
-    name: str
-    type: str
-    length: int = None
-    default: str = None
-    null: bool = True
-    primary: bool = False
-    increment: bool = None
-
-
-@dataclass
-class table():
-    name: str
-    fields: list = None
-
-
-@dataclass
-class database():
-    name: str
-    env: str = None
-    tables: list = None
 
 
 class schema():
@@ -43,7 +20,7 @@ class schema():
 
     def process_dict(self, schema_dict) -> None:
         for db, content in schema_dict['schema'].items():
-            schema_database = database(name=db, env=self.env)
+            schema_database = classes.database(name=db, env=self.env)
             log.debug(schema_database)
 
             schema_database.tables = process_tables(content)
@@ -58,7 +35,7 @@ def process_tables(database_dict: dict) -> list:
     response = []
 
     for dict_table, content in database_dict.items():
-        schema_table = table(name=dict_table)
+        schema_table = classes.table(name=dict_table)
         log.debug(schema_table)
 
         schema_table.fields = process_fields(content)
@@ -80,7 +57,7 @@ def process_fields(table_dict: dict) -> list:
             raise ValueError("Submitted field is not valid")
 
         else:
-            schema_field = field(
+            schema_field = classes.field(
                 name=dict_field,
                 type=content['type'],
                 length=content['length'],
@@ -99,7 +76,7 @@ def check_valid_fields(field_dict: dict) -> bool:
     '''Takes in a dict of an expected field and returns true if it has all
     the right attributes'''
     # Get the attributes from the dataclass
-    expected_keys = list(field.__annotations__.keys())
+    expected_keys = list(classes.field.__annotations__.keys())
     expected_keys.remove('name')
 
     log.info(field_dict)

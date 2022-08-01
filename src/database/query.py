@@ -5,6 +5,7 @@ import logging
 
 # Local Library Imports
 import src.database.connection as connection
+# import src.database.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')
@@ -31,3 +32,6 @@ def get_databases() -> list:
             response.append(record[0])
 
     return response
+
+# Map out the subsequent functions to get tables and fields within each
+# need to convert then to a dict the same as the schema
