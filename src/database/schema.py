@@ -3,6 +3,7 @@ import logging
 from dataclasses import dataclass
 
 # Third Party Library Imports
+import git
 
 # Local Library Imports
 
@@ -37,11 +38,12 @@ class database():
 class schema():
     def __init__(self) -> None:
         self.databases = []
+        self.env = str(git.Repo('.').active_branch)
         pass
 
     def process_dict(self, schema_dict) -> None:
         for db, content in schema_dict['schema'].items():
-            schema_database = database(name=db)
+            schema_database = database(name=db, env=self.env)
             log.debug(schema_database)
 
             schema_database.tables = process_tables(content)

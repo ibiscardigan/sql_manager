@@ -3,7 +3,6 @@ import configparser
 import json
 import logging
 import os
-import pathlib
 import sys
 
 # Third Party Library Imports
@@ -15,15 +14,6 @@ import git
 log = logging.getLogger('log')
 
 
-def get_git_atts(repo_path: str) -> None:
-    repo = git.Repo(repo_path)
-
-    branch = repo.active_branch
-    print(branch.name)
-    origin = repo.remotes[0]
-    print(type(origin))
-
-
 def confirm_schema(config: configparser.ConfigParser) -> dict:
     '''takes in an expected file name and return the dict extraction of the json'''
 
@@ -31,7 +21,7 @@ def confirm_schema(config: configparser.ConfigParser) -> dict:
 
     if os.path.isdir('../sql_schema') is False:
         log.info("SCHEMA: DIR DOESNT EXIST")
-        # Create the file here
+        clone_schema_git(config)
     else:
         log.info("SCHEMA: UPDATING")
         update_schema()
@@ -43,8 +33,25 @@ def confirm_schema(config: configparser.ConfigParser) -> dict:
     return json_schema
 
 
-def clone_schema_git():
+def clone_schema_git(config: configparser.ConfigParser) -> None:
     '''Clones the repo of the schema'''
+    log.info("SCHEMA: ATTEMPTING CLONE")
+
+    path_list = (os.path.dirname(__file__)).split()[0].split('/')
+    del path_list[-3:]
+    path = ''
+
+    for level in path_list:
+        path = f"{path}/{level}"
+
+    path = f"{path}/sql_schema"
+
+    try:
+        git.Repo.clone_from(config['schema']['url'], path, branch=config['instance']['env'])
+        log.info("SCHEMA: CLONED")
+    except Exception as error:
+        log.critical(f"GIT: {error}")
+        sys.exit()
 
     pass
 
