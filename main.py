@@ -7,9 +7,11 @@ from datetime import date
 
 # Local Library Imports
 import src.common.config_manager as config_manager
+import src.common.git_manager as git
 import src.database.schema as db_schema
 import src.database.query as query
-import src.common.git_manager as git
+import src.database.process as process
+
 
 # Configure Logging
 log = logging.getLogger('log')
@@ -34,13 +36,16 @@ def main():
 
     # Get user generated config
     config = config_manager.confirm_config()
+
+    # Get the schema
     json_schema = git.confirm_schema(config)
-
-
     schema = db_schema.schema().process_dict(json_schema)
 
-    # Now we need to go and get the db schema itself
-    print(query.get_databases())
+    # Get the current state from the mysql instance
+    current_database = query.get_databases()
+
+    # Compare and update
+    process.process_schema_changes(schema=schema, current_state=current_database)
 
     pass
 
