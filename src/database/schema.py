@@ -41,7 +41,7 @@ class schema():
 
     def process_dict(self, schema_dict) -> None:
         for db, content in schema_dict['schema'].items():
-            schema_database = database(name=db, env=schema_dict['env'])
+            schema_database = database(name=db)
             log.debug(schema_database)
 
             schema_database.tables = process_tables(content)

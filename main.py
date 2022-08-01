@@ -1,8 +1,6 @@
 # Standard Library Imports
 import logging
 import sys
-import json
-import os
 from datetime import date
 
 # Third Party Library Imports
@@ -36,18 +34,8 @@ def main():
 
     # Get user generated config
     config = config_manager.confirm_config()
+    json_schema = git.confirm_schema(config)
 
-    # Get system generated config
-    # Apply to logging
-
-    schema_json_path = (config['schema']['filename'])
-    schema_git_repo_path = f"{os.path.split(os.path.dirname(__file__))[0]}/sql_schema/.git"
-
-    git.get_git_atts(schema_git_repo_path)
-    sys.exit()
-
-    with open(os.path.split(os.path.dirname(__file__))[0] + config['schema']['filename']) as schemaFile:
-        json_schema = json.load(schemaFile)
 
     schema = db_schema.schema().process_dict(json_schema)
 
