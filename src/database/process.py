@@ -13,6 +13,7 @@ log = logging.getLogger('log')
 
 class difference_processor():
     def __init__(self, db_schema: schema.schema, instance_schema: query.sql_database) -> None:
+        log.info("PROCESS: STARTING DIF ASSESSMENT")
         self.json_schema = db_schema
         self.instance_schema = instance_schema
         self.process_database_differences()
@@ -24,6 +25,7 @@ class difference_processor():
         create_databases = []
         drop_databases = []
         update_databases = []
+        log.info("PROCESS: ASSESSING DB OBJECTS")
 
         # If there is a db in current state that is not in schema, add to drop list
         for db in self.instance_schema.databases:
@@ -31,7 +33,8 @@ class difference_processor():
                 log.warning(f"PROCESS: DB {db.name} TO BE DROPPED")
                 drop_databases.append(db)
             elif db.name not in update_databases:
-                log.debug(f"PROCESS: ADDING DB {db.name} TO UPDATE")
+                log.info(f"PROCESS: ADDING DB {db.name} TO UPDATE")
+                update_databases.append(db.name)
             else:
                 log.debug(f"PROCESS: DB {db.name} ALREADY IN UPDATE LIST")
 
@@ -41,9 +44,14 @@ class difference_processor():
                 log.info(f"PROCESS: DB {db.name} TO BE CREATED")
                 create_databases.append(db)
             elif db.name not in update_databases:
-                log.debug(f"PROCESS: ADDING DB {db.name} TO UPDATE")
+                log.info(f"PROCESS: ADDING DB {db.name} TO UPDATE")
+                update_databases.append(db.name)
             else:
                 log.debug(f"PROCESS: DB {db.name} ALREADY IN UPDATE LIST")
+
+        log.debug(f"PROCESS: CREATE LIST: {create_databases}")
+        log.debug(f"PROCESS: DROP LIST:   {drop_databases}")
+        log.debug(f"PROCESS: UPDATE LIST: {update_databases}")
 
         for db in update_databases:
             self.process_table_differences(db)
@@ -52,8 +60,11 @@ class difference_processor():
 
     def process_table_differences(self, database_name: str) -> None:
         ''''Get the changes in tables'''
+        log.info(f"PROCESS: ASSESSING TABLE OBJECTS FOR {database_name}")
 
+        log.info(f"PROCESS: COLLECTING {database_name} SCHEMA")
         schema_structure = self.json_schema.lookup(database_name)
+        log.info(f"PROCESS: COLLECTING {database_name} INSTANCE")
         instance_structure = self.instance_schema.lookup(database_name)
 
         drop_tables = []
@@ -65,7 +76,8 @@ class difference_processor():
                 log.warning(f"PROCESS: TABLE {table.name} TO BE DROPPED")
                 drop_tables.append(table.name)
             elif table.name not in update_tables:
-                log.debug(f"PROCESS: ADDING TABLE {table.name} TO UPDATE")
+                log.info(f"PROCESS: ADDING TABLE {table.name} TO UPDATE")
+                update_tables.append(table.name)
             else:
                 log.debug(f"PROCESS: TABLE {table.name} ALREADY IN UPDATE LIST")
 
@@ -74,8 +86,51 @@ class difference_processor():
                 log.warning(f"PROCESS: TABLE {table.name} TO BE CREATED")
                 create_tables.append(table.name)
             elif table.name not in update_tables:
-                log.debug(f"PROCESS: ADDING TABLE {table.name} TO UPDATE")
+                log.info(f"PROCESS: ADDING TABLE {table.name} TO UPDATE")
+                update_tables.append(table.name)
             else:
                 log.debug(f"PROCESS: TABLE {table.name} ALREADY IN UPDATE LIST")
+
+        log.debug(f"PROCESS: CREATE LIST: {create_tables}")
+        log.debug(f"PROCESS: DROP LIST:   {drop_tables}")
+        log.debug(f"PROCESS: UPDATE LIST: {update_tables}")
+
+        for table in update_tables:
+            self.process_field_differences(table_name=table, db_name=database_name)
+
+        pass
+
+    def process_field_differences(self, table_name: str, db_name:  str) -> None:
+
+        schema_structure = self.json_schema.lookup(db_name).lookup(table_name)
+        instance_structure = self.instance_schema.lookup(db_name).lookup(table_name)
+
+        drop_fields = []
+        create_fields = []
+        update_fields = []
+
+        # If there is a field in the instance that is not in schema, add to drop list
+        for field in instance_structure.fields:
+            if schema_structure.lookup(field.name) is None:
+                log.warning(f"PROCESS: FIELD {field.name} TO BE DROPPED")
+                drop_fields.append(field.name)
+            elif field.name not in update_fields:
+                log.debug(f"PROCESS: ADDING FIELD {field.name} TO UPDATE")
+            else:
+                log.debug(f"PROCESS: FIELD {field.name} ALREADY IN UPDATE LIST")
+
+        # If there is a field in schema that is not in the instance, add to create list
+        for field in schema_structure.fields:
+            if instance_structure.lookup(field.name) is None:
+                log.info(f"PROCESS: FIELD {field.name} TO BE CREATED")
+                create_fields.append(field.name)
+            elif field.name not in update_fields:
+                log.debug(f"PROCESS: ADDING FIELD {field.name} TO UPDATE")
+            else:
+                log.debug(f"PROCESS: FIELD {field.name} ALREADY IN UPDATE LIST")
+
+        for field in update_fields:
+            # Need to update field structures here
+            pass
 
         pass

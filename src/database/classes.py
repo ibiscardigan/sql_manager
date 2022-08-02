@@ -24,6 +24,15 @@ class table():
     name: str
     fields: list = None
 
+    def lookup(self, field_name: str) -> field:
+        '''Looks for the field within the db, if found, returns the field object'''
+
+        for field in self.fields:
+            if field.name == field_name:
+                return field
+
+        return
+
 
 @dataclass
 class database():
