@@ -9,7 +9,7 @@ from datetime import date
 import src.common.config_manager as config_manager
 import src.common.git_manager as git
 import src.database.schema as db_schema
-import src.database.query as query
+import src.database.query_database as query_database
 import src.database.process as process
 
 
@@ -42,10 +42,10 @@ def main():
     schema = db_schema.schema().process_dict(json_schema)
 
     # Get the current state from the mysql instance
-    current_database = query.get_databases()
+    sql_instance = query_database.sql_database()
 
     # Compare and update
-    process.process_schema_changes(schema=schema, current_state=current_database)
+    process.process_schema_changes(schema=schema, current_state=sql_instance)
 
     pass
 

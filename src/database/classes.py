@@ -28,5 +28,4 @@ class table():
 @dataclass
 class database():
     name: str
-    env: str = None
     tables: list = None
