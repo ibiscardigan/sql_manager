@@ -29,3 +29,12 @@ class table():
 class database():
     name: str
     tables: list = None
+
+    def lookup(self, table_name: str) -> table:
+        '''Looks for the table within the db, if found, returns the table object'''
+
+        for table in self.tables:
+            if table.name == table_name:
+                return table
+
+        return

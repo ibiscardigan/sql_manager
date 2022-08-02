@@ -45,7 +45,7 @@ def main():
     sql_instance = query_database.sql_database()
 
     # Compare and update
-    process.process_differences(db_schema=schema, current_state=sql_instance)
+    process.difference_processor(db_schema=schema, instance_schema=sql_instance)
 
     pass
 
