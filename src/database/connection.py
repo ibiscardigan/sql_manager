@@ -18,10 +18,10 @@ config_file.read('config.ini')
 def connect(database_name: str = None):
 
     if database_name is not None and isinstance(database_name, str) is False:
-        raise TypeError(f"Database Name != str; current {type(database_name)}")
+        raise TypeError(f"DATABASE: database_name != str; {type(database_name)}")
 
     if database_name is None:
-        log.info(f"SQL - CONNECTING USING {config_file['db']['db_user']}")
+        log.info(f"DATABASE: ATTEMPTING CONNECTION AS {config_file['db']['db_user']}")
         try:
             database = mysql.connector.connect(
                 host=config_file['db']['host'],
@@ -30,10 +30,10 @@ def connect(database_name: str = None):
                 )
         except Exception as error:
             print(error)
-            log.error(f"SQL - DATABASE COULD NOT CONNECT | {error}")
+            log.error(f"DATABASE: COULD NOT CONNECT | {error}")
 
     else:
-        log.info(f"SQL - CONNECTING TO {database_name} USING {config_file['db']['db_user']}")
+        log.info(f"DATABASE: CONNECTING TO {database_name} USING {config_file['db']['db_user']}")
         try:
             database = mysql.connector.connect(
                 host=config_file['db']['host'],
@@ -42,13 +42,15 @@ def connect(database_name: str = None):
                 database=database_name
                 )
         except Exception as error:
-            log.error(f"SQL - DATABASE COULD NOT CONNECT | {error}")
+            log.error(f"DATABASE: COULD NOT CONNECT | {error}")
             return
 
-    log.info(f"SQL - DATABASE CONNECTED: {database_name}")
+    log.info(f"DATABASE: CONNECTED TO {database_name}")
     return database
 
 
 def disconnect(database):
-    log.debug("DISCONNECTING FROM DATABASE")
+    log.debug("DATABASE: DISCONNECTING")
     database.disconnect()
+    log.info("DATABASE: DISCONNECTED")
+    pass

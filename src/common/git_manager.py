@@ -1,3 +1,5 @@
+# NOTE I THINK WE CAN MAKE THIS MORE GENERAL AND THUS GIVING THIS MODULE MORE FLEXIBILITY
+
 # Standard Library Imports
 import configparser
 import json
@@ -20,10 +22,10 @@ def confirm_schema(config: configparser.ConfigParser) -> dict:
     schema_file_name = config['schema']['filename']
 
     if os.path.isdir('../sql_schema') is False:
-        log.info("SCHEMA: DIR DOESNT EXIST")
+        log.info("GIT: DIR DOESNT EXIST")
         clone_schema_git(config)
     else:
-        log.info("SCHEMA: UPDATING")
+        log.info("GIT: UPDATING")
         update_schema()
         pass
 
@@ -35,7 +37,7 @@ def confirm_schema(config: configparser.ConfigParser) -> dict:
 
 def clone_schema_git(config: configparser.ConfigParser) -> None:
     '''Clones the repo of the schema'''
-    log.info("SCHEMA: ATTEMPTING CLONE")
+    log.info("GIT: ATTEMPTING CLONE")
 
     path_list = (os.path.dirname(__file__)).split()[0].split('/')
     del path_list[-3:]
@@ -48,7 +50,7 @@ def clone_schema_git(config: configparser.ConfigParser) -> None:
 
     try:
         git.Repo.clone_from(config['schema']['url'], path, branch=config['instance']['env'])
-        log.info("SCHEMA: CLONED")
+        log.info("GIT: CLONED")
     except Exception as error:
         log.critical(f"GIT: {error}")
         sys.exit()
@@ -66,13 +68,13 @@ def update_schema():
         path = f"{path}/{level}"
 
     repo_path = f"{path}/sql_schema/.git"
-    log.info(f"GIT REPO PATH: {repo_path}")
+    log.debug(f"GIT: REPO PATH: {repo_path}")
     repo = git.Repo(repo_path)
     origin = repo.remotes[0]
     try:
         origin.pull()
-        log.info("SCHEMA: UPDATED")
+        log.info("GIT: UPDATED")
     except Exception as error:
-        log.error(f"GIT PULL: {error}")
+        log.error(f"GIT: PULL: {error}")
 
     pass

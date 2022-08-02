@@ -39,13 +39,13 @@ def main():
 
     # Get the schema
     json_schema = git.confirm_schema(config)
-    schema = db_schema.schema().process_dict(json_schema)
+    schema = db_schema.schema(json_schema)
 
     # Get the current state from the mysql instance
     sql_instance = query_database.sql_database()
 
     # Compare and update
-    process.process_schema_changes(schema=schema, current_state=sql_instance)
+    process.process_differences(db_schema=schema, current_state=sql_instance)
 
     pass
 

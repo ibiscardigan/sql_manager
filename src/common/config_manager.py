@@ -21,11 +21,12 @@ def confirm_config() -> configparser.ConfigParser:
 
     # Check if the file exists
     if os.path.isfile('./config.ini') is False:
-        log.warning('./config.ini does not exist')
+        log.warning('CONFIG: ./config.ini NOT FOUND')
         create_config()
         config_file = configparser.ConfigParser()
         config_file.read('config.ini')
     else:
+        log.info("CONFIG: FOUND")
         config_file = configparser.ConfigParser()
         config_file.read('config.ini')
         template_file = configparser.ConfigParser()
@@ -50,10 +51,10 @@ def confirm_config() -> configparser.ConfigParser:
 def create_config() -> None:
     '''Creates the config from a template ini file'''
     if os.path.isfile('./config_template.ini') is False:
-        log.critical("No config_template.ini file to copy | -1")
+        log.critical("CONFIG: NO config_template.ini FILE TO COPY")
         raise FileNotFoundError('No config_template.ini file to copy')
     else:
-        log.info('Creating new config.ini')
+        log.info('CONFIG: CREATING NEW FILE')
         shutil.copy('./config_template.ini', './config.ini')
     return
 
@@ -62,7 +63,7 @@ def update_config(config_file: configparser.ConfigParser,
                   template_file: configparser.ConfigParser) -> configparser.ConfigParser:
     '''Compares the config to the temaplte and creates missing keys'''
 
-    log.debug("CONFIG CHECK")
+    log.debug("CONFIG: CHECKING")
 
     # Get the config details
     config_sections = list(config_file.keys())
@@ -73,7 +74,7 @@ def update_config(config_file: configparser.ConfigParser,
         config_dict[key] = []
         for item in config_file[key].keys():
             config_dict[key].append(item)
-    log.debug(config_dict)
+    log.debug(f"CONFIG: CURRENT STRUCTURE {config_dict}")
 
     # Get the template details
     template_sections = list(template_file.keys())
@@ -84,23 +85,23 @@ def update_config(config_file: configparser.ConfigParser,
         template_dict[key] = []
         for item in template_file[key].keys():
             template_dict[key].append(item)
-    log.debug(template_dict)
+    log.debug(f"CONFIG: TEMPLATE STRUCTURE {template_dict}")
 
     for template_key, template_value in template_dict.items():
-        log.debug(f"CONFIG CHECKING {template_key}")
+        log.debug(f"CONFIG: CHECKING {template_key}")
         if template_key not in config_dict.keys():
-            log.info(f"CONFIG [{template_key}] NOT FOUND")
+            log.info(f"CONFIG: [{template_key}] NOT FOUND")
             config_file.add_section(template_key)
             for template_attribute in template_value:
                 config_file.set(template_key, template_attribute, "")
         else:
-            log.debug(f"CONFIG [{template_key}] FOUND")
+            log.debug(f"CONFIG: [{template_key}] FOUND")
             for template_attribute in template_value:
                 if template_attribute not in config_dict[template_key]:
-                    log.debug(f"{template_key} {config_dict[key]}")
-                    log.info(f"CONFIG [{template_key}][{template_attribute}] NOT FOUND")
+                    log.info(f"CONFIG: [{template_key}][{template_attribute}] NOT FOUND")
                     config_file.set(template_key, template_attribute, "")
 
+    log.info("CONFIG: STRUCTURE UP TO DATE")
     return config_file
 
 
@@ -117,17 +118,18 @@ def verify_values(config: configparser.ConfigParser) -> configparser.ConfigParse
     for section in config.keys():
         for key, value in config[section].items():
             if len(value) == 0:
-                log.info(f"key [{key}] is missing; attempting to capture")
+                log.info(f"CONFIG: KEY [{key}] MISSING")
                 if key == 'password':
                     input_value = getpass.getpass('password: ')
-                    log.info(f"Password Length: {len(input_value)}")
+                    log.info(f"CONFIG: PASSWORD LEN {len(input_value)}")
                 elif key == 'env':
                     input_value = get_environment()
                 else:
                     input_value = input(f"{key}: ")
-                    log.info(f"Input: {input_value}")
+                    log.info(f"CONFIG: INPUT {input_value}")
 
                 log.debug(section, key, input_value)
                 config.set(section, key, input_value)
 
+    log.info("CONFIG: VALUES VALID")
     return config
