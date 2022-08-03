@@ -16,7 +16,7 @@ class field():
     default: str = None
     null: bool = True
     primary: bool = False
-    increment: bool = None
+    increment: bool = False
 
 
 @dataclass

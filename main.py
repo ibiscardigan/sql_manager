@@ -6,8 +6,8 @@ from datetime import date
 # Third Party Library Imports
 
 # Local Library Imports
-import src.common.config_manager as config_manager
-import src.common.git_manager as git
+import src.common.config.config_manager as config_manager
+import src.common.git.git_manager as git
 import src.database.schema as db_schema
 import src.database.query_database as query_database
 import src.database.process as process
@@ -45,7 +45,10 @@ def main():
     sql_instance = query_database.sql_database()
 
     # Compare and update
-    process.difference_processor(db_schema=schema, instance_schema=sql_instance)
+    changes = process.difference_processor(db_schema=schema, instance_schema=sql_instance)
+
+    for change in changes.change_sql:
+        log.debug(f"MASTER: CHANGE SQL: {change}")
 
     pass
 

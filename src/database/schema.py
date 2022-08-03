@@ -5,7 +5,7 @@ import logging
 import git
 
 # Local Library Imports
-import src.database.classes as classes
+import src.common.db_interaction.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')
@@ -71,9 +71,9 @@ class schema():
                     type=content['type'],
                     length=content['length'],
                     default=content['default'],
-                    null=content['null'],
-                    primary=content['primary'],
-                    increment=content['increment']
+                    null=bool(content['null']),
+                    primary=bool(content['primary']),
+                    increment=bool(content['increment'])
                     )
 
             response.append(schema_field)

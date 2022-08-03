@@ -20,16 +20,17 @@ def confirm_schema(config: configparser.ConfigParser) -> dict:
     '''takes in an expected file name and return the dict extraction of the json'''
 
     schema_file_name = config['schema']['filename']
+    schema_dir = config['schema']['dir']
 
-    if os.path.isdir('../sql_schema') is False:
+    if os.path.isdir(schema_dir) is False:
         log.info("GIT: DIR DOESNT EXIST")
         clone_schema_git(config)
     else:
-        log.info("GIT: UPDATING")
-        update_schema()
+        log.info("GIT: FOUND")
+        update_schema(config)
         pass
 
-    with open(f"../sql_schema/{schema_file_name}") as schemaFile:
+    with open(f"{schema_dir}/{schema_file_name}") as schemaFile:
         json_schema = json.load(schemaFile)
 
     return json_schema
@@ -40,13 +41,14 @@ def clone_schema_git(config: configparser.ConfigParser) -> None:
     log.info("GIT: ATTEMPTING CLONE")
 
     path_list = (os.path.dirname(__file__)).split()[0].split('/')
-    del path_list[-3:]
+    del path_list[-4:]
     path = ''
 
     for level in path_list:
         path = f"{path}/{level}"
 
-    path = f"{path}/sql_schema"
+    git_dir = config['schema']['dir'].split("/")[-1]
+    path = f"{path}/{git_dir}"
 
     try:
         git.Repo.clone_from(config['schema']['url'], path, branch=config['instance']['env'])
@@ -58,16 +60,20 @@ def clone_schema_git(config: configparser.ConfigParser) -> None:
     pass
 
 
-def update_schema():
+def update_schema(config: configparser.ConfigParser) -> None:
     '''Git pulls an update to the schema'''
+    log.info("GIT: UPDATING")
+
     path_list = (os.path.dirname(__file__)).split()[0].split('/')
-    del path_list[-3:]
+    del path_list[-4:]
     path = ''
 
     for level in path_list:
         path = f"{path}/{level}"
 
-    repo_path = f"{path}/sql_schema/.git"
+    git_dir = config['schema']['dir'].split("/")[-1]
+
+    repo_path = f"{path}/{git_dir}/.git"
     log.debug(f"GIT: REPO PATH: {repo_path}")
     repo = git.Repo(repo_path)
     origin = repo.remotes[0]

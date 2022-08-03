@@ -6,7 +6,7 @@ import sys
 
 # Local Library Imports
 import src.database.connection as connection
-import src.database.classes as classes
+import src.common.db_interaction.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')
