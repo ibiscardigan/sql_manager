@@ -65,7 +65,6 @@ class difference_processor():
             log.info(f"PROCESS: {len(create_commands)} SQL COMMANDS GENERATED")
             for command in create_commands:
                 log.debug(f"PROCESS: SQL GENERATED: {command}")
-        
 
         for db in update_databases:
             self.process_table_differences(db)
