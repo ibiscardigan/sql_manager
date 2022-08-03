@@ -35,6 +35,8 @@ def create_table(table: classes.table, db_name: str = None) -> list[str]:
         sql = f"CREATE TABLE {db_name}.{table.name} ("
 
     for field in table.fields:
+        log.debug(f"SQLGEN: {field}")
+
         sql = f"{sql}{field.name} {field.type}"
         if field.length is not None:
             sql = f"{sql}({field.length})"
@@ -55,6 +57,8 @@ def create_table(table: classes.table, db_name: str = None) -> list[str]:
 def create_field(field: classes.field, table_name: str, db_name: str) -> list[str]:
     '''Generates a series of sql statements to create a new table'''
 
+    log.debug(f"SQLGEN: {field}")
+
     response = []
     sql = f"ALTER TABLE {db_name}.{table_name} ADD COLUMN "
 
@@ -62,6 +66,7 @@ def create_field(field: classes.field, table_name: str, db_name: str) -> list[st
     if field.length is not None:
         sql = f"{sql}({field.length})"
     if field.increment is True:
+        log.debug(f"SQLGEN: {type(field.increment)}")
         sql = f"{sql} AUTO_INCREMENT"
     if field.null is False and field.primary is False:
         sql = f"{sql} NOT NULL"

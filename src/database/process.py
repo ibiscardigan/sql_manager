@@ -161,10 +161,10 @@ class difference_processor():
             log.info(f"PROCESS: GENERATING SQL for NEW FIELD: {field.name}")
             log.debug(f"PROCESS: FIELD: {field}")
             create_commands = sql.create_field(field=field, table_name=table_name, db_name=db_name)
+            self.change_sql.extend(create_commands)
             log.info(f"PROCESS: {len(create_commands)} SQL COMMANDS GENERATED")
             for command in create_commands:
                 log.debug(f"PROCESS: SQL GENERATED: {command}")
-        self.change_sql.extend(create_commands)
 
         for field in update_fields:
             self.process_attribute_differences(field_name=field, table_name=table_name, db_name=db_name)

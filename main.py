@@ -10,7 +10,9 @@ import src.common.config.config_manager as config_manager
 import src.common.git.git_manager as git
 import src.database.schema as db_schema
 import src.database.query_database as query_database
+import src.database.connection as connection
 import src.database.process as process
+import src.database.execute as execute
 
 
 # Configure Logging
@@ -47,8 +49,12 @@ def main():
     # Compare and update
     changes = process.difference_processor(db_schema=schema, instance_schema=sql_instance)
 
+    database = connection.connect()
+
     for change in changes.change_sql:
-        log.debug(f"MASTER: CHANGE SQL: {change}")
+        execute.execute_sql(change, database)
+
+    connection.disconnect(database)
 
     pass
 

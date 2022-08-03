@@ -21,7 +21,10 @@ class schema():
 
     def process_dict(self, schema_dict: dict) -> None:
         for db, content in schema_dict['schema'].items():
-            schema_database = classes.database(name=db)
+            if self.env != "master":
+                schema_database = classes.database(name=f"{self.env}_{db}")
+            else:
+                schema_database = classes.database(name=db)
             log.info(f"SCHEMA: PROCESSING DB: {schema_database}")
 
             schema_database.tables = self.process_tables(content)
@@ -70,11 +73,22 @@ class schema():
                     name=dict_field,
                     type=content['type'],
                     length=content['length'],
-                    default=content['default'],
-                    null=bool(content['null']),
-                    primary=bool(content['primary']),
-                    increment=bool(content['increment'])
+                    default=content['default']
                     )
+                if content['null'] == "True":
+                    schema_field.null = True
+                else:
+                    schema_field.null = False
+
+                if content['primary'] == "True":
+                    schema_field.primary = True
+                else:
+                    schema_field.primary = False
+
+                if content['increment'] == "True":
+                    schema_field.increment = True
+                else:
+                    schema_field.increment = False
 
             response.append(schema_field)
 
