@@ -101,8 +101,12 @@ class difference_processor():
         pass
 
     def process_field_differences(self, table_name: str, db_name:  str) -> None:
+        ''''Get the changes in fields'''
+        log.info(f"PROCESS: ASSESSING FIELD OBJECTS FOR {table_name}")
 
+        log.info(f"PROCESS: COLLECTING {table_name} SCHEMA")
         schema_structure = self.json_schema.lookup(db_name).lookup(table_name)
+        log.info(f"PROCESS: COLLECTING {table_name} INSTANCE")
         instance_structure = self.instance_schema.lookup(db_name).lookup(table_name)
 
         drop_fields = []

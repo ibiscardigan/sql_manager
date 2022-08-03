@@ -2,7 +2,7 @@
 
 Roadmap
 -------- Phase 1
-* Finish defference engine
+* Finish difference engine
 * Implement testing
 * Implement 'additive' database updates
 -------- Phase 1 complete
