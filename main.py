@@ -43,6 +43,9 @@ def main():
     json_schema = git.confirm_schema(config)
     schema = db_schema.schema(json_schema)
 
+    if "-install" in sys.argv:
+        sys.exit()
+
     # Get the current state from the mysql instance
     sql_instance = query_database.sql_database()
 
