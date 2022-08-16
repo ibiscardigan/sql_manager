@@ -19,7 +19,7 @@ def create_database(database: classes.database) -> list[str]:
     response.append(sql)
 
     for table in database.tables:
-        response.extend(create_table(table))
+        response.extend(create_table(table, db_name=database.name))
 
     return response
 
