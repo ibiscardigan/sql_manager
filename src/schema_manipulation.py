@@ -2,9 +2,9 @@
 import logging
 
 # Third Party Library Imports
+import commonsql.classes as classes
 
 # Local Library Imports
-import src.common.db_interaction.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')

@@ -1,19 +1,20 @@
 # Standard Library Imports
 import logging
+from inspect import getmembers
 
 # Third Party Library Imports
+import commonsql.classes as classes
 
 # Local Library Imports
-import src.database.schema as schema
-import src.database.query_database as query
-import src.common.db_interaction.schema_manipulation as sql
+import src.schema_manipulation as sql
+import src.process_schema as schema
 
 # Configure Logging
 log = logging.getLogger('log')
 
 
 class difference_processor():
-    def __init__(self, db_schema: schema.schema, instance_schema: query.sql_database) -> None:
+    def __init__(self, db_schema: schema.schema, instance_schema: list[classes.database]) -> None:
         log.info("PROCESS: STARTING DIF ASSESSMENT")
         self.json_schema = db_schema
         self.instance_schema = instance_schema
@@ -184,7 +185,8 @@ class difference_processor():
         # This time we actually need to compare the 'structure' of the differences and store down the updates
         # likley need to make the output sql
 
-        attributes = list(schema_structure.__annotations__.keys())
+        attributes = list(schema_structure.dict().keys())
+        log.debug(f"PROCESS: FOUND ATTRS: {attributes}")
         attributes.remove('name')
 
         for attribute in attributes:

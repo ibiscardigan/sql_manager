@@ -1,11 +1,12 @@
 # Standard Library Imports
 import logging
+from inspect import getmembers
 
 # Third Party Library Imports
 import git
+import commonsql.classes as classes
 
 # Local Library Imports
-import src.common.db_interaction.classes as classes
 
 # Configure Logging
 log = logging.getLogger('log')
@@ -71,7 +72,7 @@ class schema():
             else:
                 schema_field = classes.field(
                     name=dict_field,
-                    type=content['type'],
+                    field_type=content['field_type'],
                     length=content['length'],
                     default=content['default']
                     )
@@ -99,10 +100,12 @@ class schema():
         '''Takes in a dict of an expected field and returns true if it has all
         the right attributes'''
         # Get the attributes from the dataclass
-        expected_keys = list(classes.field.__annotations__.keys())
+        expected_keys = list(getmembers(classes.field.__init__)[0][1])
+        log.debug(f"SCHEMA: KEYS: {expected_keys}")
         expected_keys.remove('name')
+        expected_keys.remove('return')
 
-        log.debug(f"SCHEMA: VERIFYING FILED: {field_dict}")
+        log.debug(f"SCHEMA: VERIFYING FIELD: {field_dict}")
 
         actual_keys = list(field_dict.keys())
 

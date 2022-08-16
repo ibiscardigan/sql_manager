@@ -4,15 +4,13 @@ import sys
 from datetime import date
 
 # Third Party Library Imports
+import commonsql.connection as connection
 
 # Local Library Imports
 import src.common.config.config_manager as config_manager
 import src.common.git.git_manager as git
-import src.database.schema as db_schema
-import src.database.query_database as query_database
-import src.database.connection as connection
-import src.database.process as process
-import src.database.execute as execute
+import src.process_schema as db_schema
+import src.process_differences as process
 
 
 # Configure Logging
@@ -42,22 +40,26 @@ def main():
     # Get the schema
     json_schema = git.confirm_schema(config)
     schema = db_schema.schema(json_schema)
-
-    if "-install" in sys.argv:
+    if "-test_schema" in sys.argv:
         sys.exit()
 
     # Get the current state from the mysql instance
-    sql_instance = query_database.sql_database()
+    database = connection.connection(config=config)
+    database.connect()
+    sql_instance = database.build_schema()
+    if "-test_database" in sys.argv:
+        sys.exit()
 
     # Compare and update
     changes = process.difference_processor(db_schema=schema, instance_schema=sql_instance)
-
-    database = connection.connect()
+    if "-test_difference" in sys.argv:
+        sys.exit()
 
     for change in changes.change_sql:
-        execute.execute_sql(change, database)
+        log.debug(f"MAIN: {change}")
+        database.schema_execute(change)
 
-    connection.disconnect(database)
+    database.disconnect()
 
     pass
 
