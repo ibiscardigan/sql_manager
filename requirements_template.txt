@@ -1,0 +1,7 @@
+commonsql @ git+https://github.com/HLS-Management/common_mysql.git@%branch#egg=commonsql
+gitdb==4.0.9
+GitPython==3.1.27
+mysql-connector-python==8.0.28
+protobuf==4.21.5
+smmap==5.0.0
+pytest==7.1.2

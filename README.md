@@ -2,9 +2,10 @@
 
 Roadmap
 -------- Phase 1
-* Finish difference engine
+* Finish difference engine - additive (/)
 * Implement testing
 * Implement 'additive' database updates (/)
+* Implement install (/)
 -------- Phase 1 complete
 
 -------- Phase 2
